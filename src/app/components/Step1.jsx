@@ -15,12 +15,19 @@ const SliderField = React.memo(
       setLocalValue(value || 0);
     }, [value]);
 
-    // Фильтрация ввода: только цифры и точка
+    // Обработка изменения текстового поля
     const handleInputChange = (e) => {
       let val = e.target.value;
       // Убираем все кроме цифр и точки
       val = val.replace(/[^0-9.]/g, "");
-      setLocalValue(val === "" ? "" : Number(val));
+      const numVal = val === "" ? 0 : Number(val);
+      setLocalValue(numVal);
+    };
+
+    // Сохранение значения при потере фокуса
+    const handleBlur = () => {
+      const numVal = Number(localValue) || 0;
+      onChangeCommitted(numVal);
     };
 
     return (
@@ -28,9 +35,10 @@ const SliderField = React.memo(
         <TextField
           label={label}
           size="small"
-          type="number"
+          type="text"
           value={localValue}
           onChange={handleInputChange}
+          onBlur={handleBlur}
           fullWidth
           InputProps={{
             startAdornment: (
