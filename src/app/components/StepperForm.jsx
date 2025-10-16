@@ -1,0 +1,189 @@
+import React, { useState } from "react";
+import {
+  Box,
+  Stepper,
+  Step,
+  StepLabel,
+  Button,
+  Paper,
+  Typography,
+} from "@mui/material";
+import { motion, AnimatePresence } from "framer-motion";
+import Step1 from "./Step1";
+import Step2 from "./Step2";
+import { useTheme } from "@mui/material/styles";
+import Script from "next/script";
+const steps = ["Информация о грузе", "Контактные данные"];
+
+const stepVariants = {
+  initial: { opacity: 0, x: 50 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -50 },
+};
+
+export default function StepperForm() {
+  const [user, setUser] = useState(null);
+  const theme = useTheme(); // получаем текущую тему
+  const [activeStep, setActiveStep] = useState(0);
+  const [sending, setSending] = useState(false);
+  const [formData, setFormData] = useState({
+    cargoName: "",
+    loadPlace: "",
+    unloadPlace: "",
+    length: "",
+    width: "",
+    height: "",
+    weight: "",
+    name: "",
+    company: "",
+    email: "",
+    phone: "",
+    message: "",
+    privacy: true,
+  });
+
+  const handleChange =
+    (field, isCheckbox = false) =>
+    (e) => {
+      const value = isCheckbox ? e.target.checked : e.target.value;
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    };
+
+  const handleNext = () =>
+    setActiveStep((s) => Math.min(s + 1, steps.length - 1));
+  const handleBack = () => setActiveStep((s) => Math.max(s - 1, 0));
+
+  const handleSubmit = async () => {
+    if (!formData.cargoName || !formData.loadPlace || !formData.unloadPlace) {
+      alert("Заполните, пожалуйста, основные поля о грузе.");
+      setActiveStep(0);
+      return;
+    }
+    if (!formData.name || !formData.phone) {
+      alert("Заполните контактные данные.");
+      setActiveStep(1);
+      return;
+    }
+
+    setSending(true);
+    try {
+      // отправляем вместе с user
+      const payload = { ...formData, user };
+
+      const resp = await fetch("/api/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (resp.ok) {
+        alert("Заявка отправлена. Спасибо!");
+        setFormData({
+          cargoName: "",
+          loadPlace: "",
+          unloadPlace: "",
+          length: "",
+          width: "",
+          height: "",
+          weight: "",
+          name: "",
+          company: "",
+          email: "",
+          phone: "",
+          message: "",
+          privacy: true,
+        });
+        setActiveStep(0);
+      } else {
+        const err = await resp.json();
+        alert("Ошибка: " + (err.message || JSON.stringify(err)));
+      }
+    } catch (e) {
+      alert("Ошибка сети: " + e.message);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <Paper sx={{ p: 2, maxWidth: 720, mx: "auto" }} elevation={3}>
+      <Box sx={{ display: "flex", justifyContent: "center", p: 5 }}>
+        <img
+          src={theme.palette.mode === "dark" ? "/logo-w.svg" : "/logo-b.svg"}
+          alt="Логотип компании"
+          style={{ height: 40 }}
+        />
+      </Box>
+      <Typography variant="h5" fontWeight={500} align="center" sx={{ mb: 2 }}>
+        Заявка на перевозку груза
+      </Typography>
+
+      <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 2 }}>
+        {steps.map((s) => (
+          <Step key={s}>
+            <StepLabel>{s}</StepLabel>
+          </Step>
+        ))}
+      </Stepper>
+
+      <AnimatePresence mode="wait">
+        {activeStep === 0 && (
+          <motion.div
+            key="step1"
+            variants={stepVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.2 }}
+          >
+            <Step1 formData={formData} onChange={handleChange} />
+          </motion.div>
+        )}
+        {activeStep === 1 && (
+          <motion.div
+            key="step2"
+            variants={stepVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.2 }}
+          >
+            <Step2 formData={formData} onChange={handleChange} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+        <Button disabled={activeStep === 0} onClick={handleBack}>
+          Назад
+        </Button>
+        {activeStep < steps.length - 1 ? (
+          <Button onClick={handleNext} variant="contained">
+            Далее
+          </Button>
+        ) : (
+          <Button onClick={handleSubmit} variant="contained" disabled={sending}>
+            {sending ? "Отправка..." : "Отправить"}
+          </Button>
+        )}
+      </Box>
+      <Script
+        src="https://telegram.org/js/telegram-web-app.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          console.log("Telegram WebApp script loaded");
+
+          if (window.Telegram?.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            console.log("tg.initDataUnsafe:", tg.initDataUnsafe);
+            console.log("tg.initDataUnsafe.user:", tg.initDataUnsafe?.user);
+            setUser(tg.initDataUnsafe?.user || null);
+          } else {
+            console.log("Telegram WebApp is still not available after load");
+          }
+        }}
+      />
+    </Paper>
+  );
+}
