@@ -15,6 +15,7 @@ import Step1 from "./Step1";
 import Step2 from "./Step2";
 import { useTheme } from "@mui/material/styles";
 import Script from "next/script";
+import SuccessDialog from "./SuccessDialog";
 const steps = ["Информация о грузе", "Контактные данные"];
 
 const stepVariants = {
@@ -28,6 +29,7 @@ export default function StepperForm() {
   const theme = useTheme(); // получаем текущую тему
   const [activeStep, setActiveStep] = useState(0);
   const [sending, setSending] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
   const [formData, setFormData] = useState({
     cargoName: "",
     loadPlace: "",
@@ -79,7 +81,8 @@ export default function StepperForm() {
       });
 
       if (resp.ok) {
-        alert("Заявка отправлена. Спасибо!");
+        // show success dialog instead of alert
+        setSuccessOpen(true);
         setFormData({
           cargoName: "",
           loadPlace: "",
@@ -169,6 +172,7 @@ export default function StepperForm() {
           </Button>
         )}
       </Box>
+      <SuccessDialog open={successOpen} onClose={() => setSuccessOpen(false)} />
       <Script
         src="https://telegram.org/js/telegram-web-app.js"
         strategy="afterInteractive"

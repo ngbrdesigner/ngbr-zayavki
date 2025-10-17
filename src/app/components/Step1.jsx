@@ -40,15 +40,17 @@ const SliderField = React.memo(
           onChange={handleInputChange}
           onBlur={handleBlur}
           fullWidth
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Icon fontSize="small" />
-              </InputAdornment>
-            ),
-            endAdornment: unit ? (
-              <InputAdornment position="end">{unit}</InputAdornment>
-            ) : null,
+          slotProps={{
+            input: {
+              startAdornment: Icon && (
+                <InputAdornment position="start">
+                  <Icon fontSize="small" />
+                </InputAdornment>
+              ),
+              endAdornment: unit && (
+                <InputAdornment position="end">{unit}</InputAdornment>
+              ),
+            },
           }}
         />
         <Slider
@@ -81,15 +83,17 @@ const TextFieldLocal = React.memo(({ label, Icon, unit, value, onChange }) => {
       value={localValue}
       onChange={(e) => setLocalValue(e.target.value)}
       onBlur={() => onChange(localValue)}
-      InputProps={{
-        startAdornment: Icon && (
-          <InputAdornment position="start">
-            <Icon fontSize="small" />
-          </InputAdornment>
-        ),
-        endAdornment: unit && (
-          <InputAdornment position="end">{unit}</InputAdornment>
-        ),
+      slotProps={{
+        input: {
+          startAdornment: Icon && (
+            <InputAdornment position="start">
+              <Icon fontSize="small" />
+            </InputAdornment>
+          ),
+          endAdornment: unit && (
+            <InputAdornment position="end">{unit}</InputAdornment>
+          ),
+        },
       }}
     />
   );
