@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
-export default function SuccessDialog({ open, onClose, autoCloseMs = 2500 }) {
+export default function SuccessDialog({ open, onClose, autoCloseMs = 0 }) {
   useEffect(() => {
     if (!open) return;
     if (autoCloseMs > 0) {

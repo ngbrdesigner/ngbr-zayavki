@@ -81,24 +81,8 @@ export default function StepperForm() {
       });
 
       if (resp.ok) {
-        // show success dialog instead of alert
+        // show success dialog; actual reset will happen when dialog is closed
         setSuccessOpen(true);
-        setFormData({
-          cargoName: "",
-          loadPlace: "",
-          unloadPlace: "",
-          length: "",
-          width: "",
-          height: "",
-          weight: "",
-          name: "",
-          company: "",
-          email: "",
-          phone: "",
-          message: "",
-          privacy: true,
-        });
-        setActiveStep(0);
       } else {
         const err = await resp.json();
         alert("Ошибка: " + (err.message || JSON.stringify(err)));
@@ -172,7 +156,29 @@ export default function StepperForm() {
           </Button>
         )}
       </Box>
-      <SuccessDialog open={successOpen} onClose={() => setSuccessOpen(false)} />
+      <SuccessDialog
+        open={successOpen}
+        onClose={() => {
+          setSuccessOpen(false);
+          // reset form and return to first step when user closes dialog
+          setFormData({
+            cargoName: "",
+            loadPlace: "",
+            unloadPlace: "",
+            length: "",
+            width: "",
+            height: "",
+            weight: "",
+            name: "",
+            company: "",
+            email: "",
+            phone: "",
+            message: "",
+            privacy: true,
+          });
+          setActiveStep(0);
+        }}
+      />
       <Script
         src="https://telegram.org/js/telegram-web-app.js"
         strategy="afterInteractive"
