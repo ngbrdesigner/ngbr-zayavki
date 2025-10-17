@@ -9,25 +9,33 @@ import ScaleIcon from "@mui/icons-material/Scale";
 
 const SliderField = React.memo(
   ({ label, Icon, unit, min, max, step, value, onChangeCommitted }) => {
-    const [localValue, setLocalValue] = useState(value || 0);
+    const [localValue, setLocalValue] = useState(() =>
+      value !== undefined && value !== null ? String(value) : "0"
+    );
 
     useEffect(() => {
-      setLocalValue(value || 0);
+      setLocalValue(
+        value !== undefined && value !== null ? String(value) : "0"
+      );
     }, [value]);
 
-    // Обработка изменения текстового поля
+    // Обработка изменения текстового поля — сохраняем строку, чтобы не терять разделитель при вводе
+    // Поддерживаем и точку, и запятую в качестве десятичного разделителя
     const handleInputChange = (e) => {
       let val = e.target.value;
-      // Убираем все кроме цифр и точки
-      val = val.replace(/[^0-9.]/g, "");
-      const numVal = val === "" ? 0 : Number(val);
-      setLocalValue(numVal);
+      // Убираем всё кроме цифр, точки и запятой
+      val = val.replace(/[^0-9.,]/g, "");
+      setLocalValue(val);
     };
 
     // Сохранение значения при потере фокуса
     const handleBlur = () => {
-      const numVal = Number(localValue) || 0;
+      // Нормализуем запятую в точку перед конвертацией
+      const normalized = String(localValue).replace(",", ".");
+      const numVal = Number(normalized) || 0;
       onChangeCommitted(numVal);
+      // Сохраняем обратно строковое представление нормализованного значения
+      setLocalValue(String(normalized));
     };
 
     return (
@@ -55,7 +63,7 @@ const SliderField = React.memo(
         />
         <Slider
           value={Number(localValue) || 0}
-          onChange={(e, val) => setLocalValue(val)}
+          onChange={(e, val) => setLocalValue(String(val))}
           onChangeCommitted={(e, val) => onChangeCommitted(val)}
           min={min}
           max={max}
