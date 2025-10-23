@@ -139,7 +139,7 @@ export default function Step1({ formData, onChange }) {
         Icon={StraightenIcon}
         unit="м"
         min={0}
-        max={50}
+        max={100}
         step={0.1}
         value={formData.length}
         onChangeCommitted={handleChange("length")}
@@ -172,7 +172,7 @@ export default function Step1({ formData, onChange }) {
         Icon={ScaleIcon}
         unit="т"
         min={0}
-        max={100}
+        max={300}
         step={0.5}
         value={formData.weight}
         onChangeCommitted={handleChange("weight")}
