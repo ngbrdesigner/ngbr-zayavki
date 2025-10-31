@@ -23,10 +23,10 @@ export default function TopAlert({
         transition: { direction: "down" }, // можно указать дополнительные props
       }}
       sx={{
-        position: "absolute",
-        top: 16,
+        position: "fixed",
         left: 15,
         right: 15,
+        top: 16,
         zIndex: 9999,
       }}
     >

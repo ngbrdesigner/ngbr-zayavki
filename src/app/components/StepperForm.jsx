@@ -105,7 +105,10 @@ export default function StepperForm() {
   };
 
   return (
-    <Paper sx={{ p: 2, maxWidth: 720, mx: "auto" }} elevation={3}>
+    <Paper
+      sx={{ p: 2, maxWidth: 720, mx: "auto", overflow: "hidden" }}
+      elevation={3}
+    >
       <Box sx={{ display: "flex", justifyContent: "center", p: 5 }}>
         <img
           src={theme.palette.mode === "dark" ? "/logo-w.svg" : "/logo-b.svg"}
