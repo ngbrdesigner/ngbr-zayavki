@@ -16,6 +16,7 @@ import Step2 from "./Step2";
 import { useTheme } from "@mui/material/styles";
 import Script from "next/script";
 import SuccessDialog from "./SuccessDialog";
+import TopAlert from "./TopAlert";
 const steps = ["Информация о грузе", "Контактные данные"];
 
 const stepVariants = {
@@ -57,23 +58,33 @@ export default function StepperForm() {
     setActiveStep((s) => Math.min(s + 1, steps.length - 1));
   const handleBack = () => setActiveStep((s) => Math.max(s - 1, 0));
 
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
+
+  const showAlert = (message, severity = "error") => {
+    setAlert({ open: true, message, severity });
+  };
+
+  const handleCloseAlert = () => setAlert({ ...alert, open: false });
+
   const handleSubmit = async () => {
     if (!formData.cargoName || !formData.loadPlace || !formData.unloadPlace) {
-      alert("Заполните, пожалуйста, основные поля о грузе.");
+      showAlert("Заполните, пожалуйста, основные поля о грузе.");
       setActiveStep(0);
       return;
     }
     if (!formData.name || !formData.phone) {
-      alert("Заполните контактные данные.");
+      showAlert("Заполните контактные данные.");
       setActiveStep(1);
       return;
     }
 
     setSending(true);
     try {
-      // отправляем вместе с user
       const payload = { ...formData, user };
-
       const resp = await fetch("/api/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -81,14 +92,13 @@ export default function StepperForm() {
       });
 
       if (resp.ok) {
-        // show success dialog; actual reset will happen when dialog is closed
         setSuccessOpen(true);
       } else {
         const err = await resp.json();
-        alert("Ошибка: " + (err.message || JSON.stringify(err)));
+        showAlert("Ошибка: " + (err.message || JSON.stringify(err)));
       }
     } catch (e) {
-      alert("Ошибка сети: " + e.message);
+      showAlert("Ошибка сети: " + e.message);
     } finally {
       setSending(false);
     }
@@ -141,6 +151,12 @@ export default function StepperForm() {
           </motion.div>
         )}
       </AnimatePresence>
+      <TopAlert
+        open={alert.open}
+        message={alert.message}
+        severity={alert.severity}
+        onClose={handleCloseAlert}
+      />
 
       <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
         <Button disabled={activeStep === 0} onClick={handleBack}>
