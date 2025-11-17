@@ -23,6 +23,7 @@ export async function POST(req) {
   //   data.height,
   //   data.weight,
   //   data.name,
+  //   data.personType,
   //   data.company,
   //   data.email,
   //   data.phone,
@@ -46,10 +47,14 @@ export async function POST(req) {
 ⚖️ <b>Масса:</b> ${data.weight} т
 
 👤 <b>Отправитель:</b>
+${
+  data.personType === "legal"
+    ? `• Юр. лицо, компания: ${data.company}`
+    : "• Физ. лицо"
+}
 • Имя: ${data.name}
-• Компания: ${data.company}
-• Email: ${data.email}
 • Телефон: ${data.phone}
+• Email: ${data.email}
 
 🤖 <b>Telegram:</b>
 • ID: ${data.user?.id || "—"}

@@ -39,6 +39,7 @@ export default function StepperForm() {
     width: "",
     height: "",
     weight: "",
+    personType: "",
     name: "",
     company: "",
     email: "",
@@ -78,6 +79,11 @@ export default function StepperForm() {
     }
     if (!formData.name || !formData.phone) {
       showAlert("Заполните контактные данные.");
+      setActiveStep(1);
+      return;
+    }
+    if (formData.personType === "legal" && !formData.company) {
+      showAlert("Заполните наименование компании.");
       setActiveStep(1);
       return;
     }
@@ -138,7 +144,11 @@ export default function StepperForm() {
             exit="exit"
             transition={{ duration: 0.2 }}
           >
-            <Step1 formData={formData} onChange={handleChange} />
+            <Step1
+              formData={formData}
+              onChange={handleChange}
+              handleNext={handleNext}
+            />
           </motion.div>
         )}
         {activeStep === 1 && (
@@ -150,7 +160,11 @@ export default function StepperForm() {
             exit="exit"
             transition={{ duration: 0.2 }}
           >
-            <Step2 formData={formData} onChange={handleChange} />
+            <Step2
+              formData={formData}
+              onChange={handleChange}
+              handleSubmit={handleSubmit}
+            />
           </motion.div>
         )}
       </AnimatePresence>

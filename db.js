@@ -16,6 +16,7 @@ db.prepare(
     width REAL,
     height REAL,
     weight REAL,
+    personType TEXT,
     name TEXT,
     company TEXT,
     email TEXT,
