@@ -1,4 +1,4 @@
-// import db from "../../../../db";
+import db from "../../../../db";
 import { Telegraf } from "telegraf";
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -6,35 +6,35 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 export async function POST(req) {
   const data = await req.json();
 
-  // db.prepare(
-  //   `
-  // INSERT INTO applications (
-  //   cargoName, loadPlace, unloadPlace, length, width, height, weight,
-  //   name, company, email, phone, message, privacy, date,
-  //   tg_id, tg_first_name, tg_last_name, tg_username
-  // ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  // `
-  // ).run(
-  //   data.cargoName,
-  //   data.loadPlace,
-  //   data.unloadPlace,
-  //   data.length,
-  //   data.width,
-  //   data.height,
-  //   data.weight,
-  //   data.name,
-  //   data.personType,
-  //   data.company,
-  //   data.email,
-  //   data.phone,
-  //   data.message,
-  //   data.privacy ? 1 : 0,
-  //   new Date().toISOString(),
-  //   data.user?.id || null,
-  //   data.user?.first_name || null,
-  //   data.user?.last_name || null,
-  //   data.user?.username || null
-  // );
+  db.prepare(
+    `
+  INSERT INTO applications (
+    cargoName, loadPlace, unloadPlace, length, width, height, weight,
+    name, personType, company, email, phone, message, privacy, date,
+    tg_id, tg_first_name, tg_last_name, tg_username
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`
+  ).run(
+    data.cargoName,
+    data.loadPlace,
+    data.unloadPlace,
+    data.length,
+    data.width,
+    data.height,
+    data.weight,
+    data.name,
+    data.personType, // физ или юр
+    data.company || null, // если физлицо — null или пустая строка
+    data.email,
+    data.phone,
+    data.message,
+    data.privacy ? 1 : 0,
+    new Date().toISOString(),
+    data.user?.id || null,
+    data.user?.first_name || null,
+    data.user?.last_name || null,
+    data.user?.username || null
+  );
 
   // отправляем админу
   const message = `
